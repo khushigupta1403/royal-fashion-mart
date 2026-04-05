@@ -1,5 +1,6 @@
 com\royalfashionmart\service\PaymentService.class
 com\royalfashionmart\service\EmailService.class
+com\royalfashionmart\controller\HomeController.class
 com\royalfashionmart\repository\CartRepository.class
 com\royalfashionmart\controller\AuthController.class
 com\royalfashionmart\service\CustomUserDetailsService.class

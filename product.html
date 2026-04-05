@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Products - Royal Fashion Mart</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Poppins;
+  background:linear-gradient(to right,#f8f9fa,#eef2f7);
+}
+
+/* NAVBAR */
+.navbar{
+  background:#111;
+  color:white;
+  padding:15px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.navbar h2{
+  margin:0;
+  font-weight:600;
+}
+
+.navbar span{
+  color:#ff6b6b;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+  padding:25px;
+}
+
+/* CARD */
+.card{
+  background:white;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  transition:0.3s;
+  position:relative;
+}
+
+.card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* IMAGE */
+.card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.card:hover img{
+  transform:scale(1.05);
+}
+
+/* CONTENT */
+.card h3{
+  margin:10px;
+  font-size:16px;
+  color:#333;
+}
+
+.card p{
+  margin:0 10px;
+  font-weight:600;
+  color:#ff6b6b;
+  font-size:18px;
+}
+
+/* BUTTON */
+.card button{
+  margin:10px;
+  width:calc(100% - 20px);
+  padding:10px;
+  border:none;
+  background:linear-gradient(45deg,#ff6b6b,#ff3b3b);
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.card button:hover{
+  background:linear-gradient(45deg,#ff3b3b,#ff1f1f);
+  transform:scale(1.03);
+}
+
+/* BADGE */
+.badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:#ff6b6b;
+  color:white;
+  padding:4px 8px;
+  font-size:12px;
+  border-radius:5px;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .navbar{
+    flex-direction:column;
+    gap:10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <h2>🛍 Royal <span>Fashion Mart</span></h2>
+  <p>Trendy Collection 🔥</p>
+</div>
+
+<!-- PRODUCTS -->
+<div class="grid" id="products"></div>
+
+<script>
+
+// SAME PRODUCTS
+let products = [
+ {name:"Men watch",price:1499,img:"https://i.ebayimg.com/images/g/Cu0AAeSwBEFn32ON/s-l1600.jpg",category:"men"},
+    {name:"Men Shirt",price:499,img:"https://tse3.mm.bing.net/th/id/OIP.KEegujPFGFBVXH4z_yMo-gHaJ3?pid=Api&P=0&h=180",category:"men"},
+    {name:"Men T-Shirt",price:500,img:"https://images.bewakoof.com/original/men-s-brown-oversized-t-shirt-546274-1664534735-1.jpg",category:"men"},
+    {name:"Men Shoes",price:999,img:"https://tse2.mm.bing.net/th/id/OIP.g13SMhS7ICpVmKBDYk73sQHaFm?pid=Api&P=0&h=180",category:"men"},
+    {name:"Women heels",price:1500,img:"https://i.pinimg.com/originals/7a/08/6e/7a086edab3c4fbf17df2d43b8fbf78bc.jpg",category:"women"},
+    {name:"Women Saree",price:1220,img:"https://tse1.mm.bing.net/th/id/OIP.kokJ3mud62vJ-sr_o38iUwHaLm?pid=Api&P=0&h=180",category:"women"},
+    {name:"Women Dress",price:1299,img:"https://tse2.mm.bing.net/th/id/OIP.vMv_eP05YwbOhwcooe9IOAHaLH?pid=Api&P=0&h=180",category:"women"},
+    {name:"Kids Dress",price:699,img:"https://i.pinimg.com/originals/c3/3f/67/c33f67746dc21a3fcbeaec28a0292992.jpg",category:"kids"},
+    {name:"Kids Shoes",price:499,img:"https://tse1.mm.bing.net/th/id/OIP.YPPmrOG4voiNwLqU8YbTkgHaHa?pid=Api&P=0&h=180",category:"kids"},
+    {name:"Grocery Pack",price:299,img:"https://images.unsplash.com/photo-1542838132-92c53300491e",category:"grocery"},
+    {name:"chocolates",price:299,img:"https://tse3.mm.bing.net/th/id/OIP.bgdAgDhG_kj1q6Z-7gI5bQHaFS?pid=Api&P=0&h=180",category:"grocery"},
+    {name:"softdrinks",price:400,img:"http://www.vegos.com.au/wp-content/uploads/2020/04/SoftDrinkCans.jpg",category:"grocery"},
+    {name:"biscuits",price:100,img:"https://tse4.mm.bing.net/th/id/OIP.CWjLyQ0sxkztkVptSVpwaQHaFy?pid=Api&P=0&h=180",category:"grocery"},
+    {name:"oil",price:500,img:"https://tse3.mm.bing.net/th/id/OIP.AqfonX06cNrVYpkyPIfMnQHaHa?pid=Api&P=0&h=180",category:"grocery"},
+    {name:"handbag",price:1500,img:"https://m.media-amazon.com/images/I/81tVcnHMrSL._AC_SL1500_.jpg",category:"accessories"},
+    {name:"sunglasses",price:999,img:"https://tse1.mm.bing.net/th/id/OIP.1scVlD3-D2HDV5NkSo0DHgHaE8?pid=Api&P=0&h=180",category:"accessories"},
+    {name:"wallet",price:1200,img:"https://tse1.mm.bing.net/th/id/OIP.hKmIdI_mFDreu0sQ9UjkYgHaHP?pid=Api&P=0&h=180",category:"accessories"},
+    {name:"phonecover",price:400,img:"https://i.etsystatic.com/23799085/r/il/409986/3141987247/il_1588xN.3141987247_h3dl.jpg",category:"accessories"},
+    {name:"earings",price:400,img:"https://tse4.mm.bing.net/th/id/OIP.arZJ9NXBRL8kZA2yZG-ViwHaHa?pid=Api&P=0&h=180",category:"accessories"},
+    {name:"Face Wash",price:199,img:"https://tse2.mm.bing.net/th/id/OIP.woDNn_b7Wgm7zWh1YFXrFgHaHZ?pid=Api&P=0&h=180",category:"care"},
+    {name:"perfume",price:800,img:"https://cdn.pixabay.com/photo/2017/03/14/11/41/perfume-2142824_1280.jpg",category:"care"},
+    {name:"suncreen",price:600,img:"https://tse2.mm.bing.net/th/id/OIP.LVFnMvo62OAge3VSafIMoQHaHa?pid=Api&P=0&h=180",category:"care"},
+    {name:"body wash",price:500,img:"https://cdn01.pharmeasy.in/dam/products_otc/S43740/nivea-shower-gel-water-lily-oil-body-wash-250ml-2-1679373740.jpg",category:"care"},
+    {name:"lamp",price:1900,img:"https://homeblitz.in/cdn/shop/articles/Table-Lamp-mb.png?v=1694030390",category:"home decor"},
+    {name:"plants vase",price:1000,img:"https://m.media-amazon.com/images/I/71cP9TsX9oL._AC_.jpg",category:"home decor"},
+        {name:"lights",price:2000,img:"https://tse3.mm.bing.net/th/id/OIP.Lv6YGjpey8wXAAXk4Vvb-QHaJQ?pid=Api&P=0&h=180",category:"home decor"},
+
+    {name:"wall hanging",price:600,img:"http://nestasia.in/cdn/shop/files/Wallhanging_2_d30dfc6e-a01b-49d3-b8f3-7f75e064f779.webp?v=1697548096",category:"home decor"}
+];
+
+// RENDER
+let html = "";
+
+products.forEach(p=>{
+  let data = encodeURIComponent(JSON.stringify(p));
+
+  html += `
+  <div class="card">
+    <div class="badge">New</div>
+    <img src="${p.img}" onclick='goToDetails("${data}")'>
+    <h3>${p.name}</h3>
+    <p>₹${p.price}</p>
+    <button onclick='goToDetails("${data}")'>View Details</button>
+  </div>
+  `;
+});
+
+document.getElementById("products").innerHTML = html;
+
+
+// SAME FUNCTION (NO CHANGE)
+function goToDetails(data){
+  let p = JSON.parse(decodeURIComponent(data));
+
+  localStorage.setItem("product", JSON.stringify({
+    name: p.name,
+    price: p.price,
+    img: p.img,
+    description: p.name
+  }));
+
+  window.location.href = "product-details.html";
+}
+
+</script>
+
+</body>
+</html>

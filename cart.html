@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cart 🛒 - Royal Fashion Mart</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{
+    margin:0;
+    font-family:'Poppins', sans-serif;
+    background:#f0f2f5;
+}
+
+/* Header */
+.header{
+    background:#1e1e1e;
+    color:white;
+    padding:20px 15px;
+    text-align:center;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:1px;
+}
+
+/* Container */
+.container{
+    max-width:900px;
+    margin:20px auto;
+    padding:0 15px;
+}
+
+/* Cart Item */
+.cart-item{
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin:15px 0;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    transition:transform 0.3s, box-shadow 0.3s, opacity 0.5s;
+    opacity:0;
+    transform:translateX(-50px);
+    animation:slideIn 0.5s forwards;
+}
+
+@keyframes slideIn{
+    to {opacity:1; transform:translateX(0);}
+}
+
+.cart-item img{
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:12px;
+}
+
+.cart-item div{
+    flex:1;
+    margin-left:20px;
+}
+
+.cart-item h4{
+    margin:0 0 5px 0;
+    font-size:18px;
+    font-weight:600;
+}
+
+.cart-item p{
+    margin:0;
+    color:#555;
+    font-weight:500;
+}
+
+/* Quantity Controls */
+.qty-controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:8px;
+}
+
+.qty-controls button{
+    padding:6px 12px;
+    background:#1e1e1e;
+    color:white;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:600;
+    transition:background 0.2s;
+}
+
+.qty-controls button:hover{
+    background:#333;
+}
+
+.qty-controls span{
+    min-width:25px;
+    text-align:center;
+    display:inline-block;
+    font-weight:600;
+}
+
+/* Remove Button */
+.cart-item button:last-child{
+    background:#ff4d4f;
+    border:none;
+    color:white;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+    transition:background 0.2s;
+}
+
+.cart-item button:last-child:hover{
+    background:#e03e3e;
+}
+
+/* Checkout Section */
+.checkout-container{
+    max-width:900px;
+    margin:20px auto;
+    padding:15px;
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.total-summary{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+.total-summary div{
+    display:flex;
+    justify-content:space-between;
+    margin:8px 0;
+    font-size:16px;
+    font-weight:500;
+}
+
+.total-summary strong{
+    font-size:18px;
+    font-weight:700;
+}
+
+/* Checkout Buttons */
+.checkout-container button{
+    padding:15px;
+    font-size:16px;
+    font-weight:600;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    transition:opacity 0.2s, transform 0.2s;
+}
+
+.checkout-container button:hover{
+    opacity:0.9;
+    transform:translateY(-2px);
+}
+
+.checkout-btn{
+    background:#ff6b01;
+    color:white;
+}
+
+.clear-btn{
+    background:#555;
+    color:white;
+}
+
+/* Discount Code */
+.discount-container{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.discount-container input{
+    flex:1;
+    padding:10px 15px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+
+.discount-container button{
+    background:#1e1e1e;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:10px 20px;
+    cursor:pointer;
+}
+
+/* Empty Cart */
+.empty-cart{
+    text-align:center;
+    padding:50px 0;
+    font-size:20px;
+    color:#777;
+}
+
+/* Suggested Products */
+.suggested-container{
+    max-width:900px;
+    margin:40px auto 20px;
+    padding:0 15px;
+}
+
+.suggested-container h3{
+    margin-bottom:15px;
+    font-size:20px;
+    font-weight:600;
+}
+
+.suggested-carousel{
+    display:flex;
+    overflow-x:auto;
+    gap:15px;
+    padding-bottom:10px;
+}
+
+.suggested-carousel::-webkit-scrollbar{
+    display:none;
+}
+
+.suggested-item{
+    min-width:150px;
+    background:white;
+    border-radius:12px;
+    padding:10px;
+    box-shadow:0 6px 15px rgba(0,0,0,0.08);
+    transition:transform 0.2s, box-shadow 0.2s;
+    cursor:pointer;
+}
+
+.suggested-item:hover{
+    transform:translateY(-5px);
+    box-shadow:0 12px 20px rgba(0,0,0,0.15);
+}
+
+.suggested-item img{
+    width:100%;
+    height:120px;
+    object-fit:cover;
+    border-radius:8px;
+}
+
+.suggested-item h4{
+    font-size:16px;
+    margin:8px 0 5px;
+}
+
+.suggested-item p{
+    font-size:14px;
+    color:#555;
+    margin:0;
+}
+
+/* Responsive */
+@media(max-width:600px){
+    .cart-item{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .cart-item div{
+        margin-left:0;
+        margin-top:10px;
+    }
+
+    .checkout-container{
+        padding:10px;
+    }
+
+    .suggested-item{
+        min-width:120px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="header">🛒 Your Cart</div>
+
+<div class="container" id="cart-list">Loading...</div>
+
+<div class="checkout-container">
+  <div class="discount-container">
+    <input type="text" id="discount-code" placeholder="Enter discount code">
+    <button onclick="applyDiscount()">Apply</button>
+  </div>
+  <div class="total-summary">
+    <div><span>Subtotal:</span> <span id="subtotal">₹0</span></div>
+    <div><span>Discount:</span> <span id="discount">₹0</span></div>
+    <div><span>Shipping:</span> <span id="shipping">₹50</span></div>
+    <div><strong>Total:</strong> <strong id="total">₹0</strong></div>
+  </div>
+  <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+  <button class="clear-btn" onclick="clearCart()">Clear Cart</button>
+</div>
+
+<!-- Suggested Products -->
+<div class="suggested-container">
+    <h3>You May Also Like</h3>
+    <div class="suggested-carousel" id="suggested-list">
+        <!-- Products added by JS -->
+    </div>
+</div>
+
+<script>
+// Cart Logic
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+const shippingFee = 50;
+let discount = 0;
+
+function loadCart(){
+    if(cart.length===0){
+        document.getElementById("cart-list").innerHTML='<div class="empty-cart">Your cart is empty 😢</div>';
+        document.getElementById("subtotal").innerText = "₹0";
+        document.getElementById("discount").innerText = "₹0";
+        document.getElementById("total").innerText = "₹0";
+        return;
+    }
+
+    let html = "";
+    cart.forEach((p,i)=>{
+        html += `
+        <div class="cart-item" style="animation-delay:${i*0.1}s">
+            <img src="${p.img || p.image}" alt="${p.name}">
+            <div>
+                <h4>${p.name}</h4>
+                <p>₹${p.price}</p>
+                <div class="qty-controls">
+                    <button onclick="updateQty(${i}, -1)">-</button>
+                    <span id="qty-${i}">${p.qty || 1}</span>
+                    <button onclick="updateQty(${i}, 1)">+</button>
+                </div>
+            </div>
+            <button onclick="removeItem(${i})">Remove</button>
+        </div>`;
+    });
+    document.getElementById("cart-list").innerHTML = html;
+    calculateTotal();
+}
+
+function updateQty(index, change){
+    if(cart[index].qty + change < 1) return;
+    cart[index].qty += change;
+    localStorage.setItem("cart", JSON.stringify(cart));
+    document.getElementById("qty-"+index).innerText = cart[index].qty;
+    calculateTotal();
+}
+
+function removeItem(index){
+    cart.splice(index,1);
+    localStorage.setItem("cart",JSON.stringify(cart));
+    loadCart();
+}
+
+function clearCart(){
+    if(confirm("Are you sure you want to clear the cart?")){
+        cart=[];
+        localStorage.setItem("cart",JSON.stringify(cart));
+        loadCart();
+    }
+}
+
+function calculateTotal(){
+    let subtotal = cart.reduce((s,i)=>s+(i.price*i.qty),0);
+    let appliedDiscount = discount;
+    let total = subtotal - appliedDiscount + shippingFee;
+    document.getElementById("subtotal").innerText = "₹"+subtotal;
+    document.getElementById("discount").innerText = "₹"+appliedDiscount;
+    document.getElementById("total").innerText = "₹"+(total>0?total:0);
+}
+
+// Checkout
+function checkout(){
+    if(cart.length===0){alert("Cart is empty"); return;}
+    localStorage.setItem("checkout", JSON.stringify(cart));
+    window.location="checkout.html";
+}
+
+// Discount Codes
+function applyDiscount(){
+    let code = document.getElementById("discount-code").value.trim().toUpperCase();
+    
+    const discounts = {
+        "SAVE50": 50,       // ₹50 off
+        "WELCOME100": 100,  // ₹100 off
+        "FLAT10": 0.1       // 10% off
+    };
+
+    if(discounts[code]){
+        if(cart.length > 0 && discounts[code] < 1){ // Percentage discount
+            discount = cart.reduce((s,i)=>s+(i.price*i.qty),0) * discounts[code];
+        } else { // Fixed discount
+            discount = discounts[code];
+        }
+        alert("Discount applied!");
+    } else {
+        discount = 0;
+        alert("Invalid code");
+    }
+    calculateTotal();
+}
+
+// Suggested Products
+const suggestedProducts = [
+    {name:"Floral Dress",price:799,img:"https://beautypitara.com/wp-content/uploads/2024/02/long-floral-prom-dress-ideas-16-768x998.jpg"},
+    {name:"Casual Shoes",price:1299,img:"https://tse1.mm.bing.net/th/id/OIP.JmlMZ2cXslWwtcWD0MRjawHaDv?pid=Api&P=0&h=180"},
+    {name:"Handbag",price:999,img:"https://tse3.mm.bing.net/th/id/OIP.oAuqtBmmoKAy9WFZC2GsTAHaGD?pid=Api&P=0&h=180"},
+    {name:"Sunglasses",price:499,img:"https://tse1.mm.bing.net/th/id/OIP.q0tQZCgx5Af5wBJ2NDdoIQHaJ4?pid=Api&P=0&h=180"},
+    {name:"Watch",price:1999,img:"https://tse4.mm.bing.net/th/id/OIP.kdbhWeYj6A3FPqyY3SJAVwHaHa?pid=Api&P=0&h=180"}
+];
+
+const suggestedList = document.getElementById("suggested-list");
+suggestedProducts.forEach(p=>{
+    const div = document.createElement("div");
+    div.className="suggested-item";
+    div.innerHTML = `<img src="${p.img}" alt="${p.name}"><h4>${p.name}</h4><p>₹${p.price}</p>`;
+    div.onclick = ()=>{
+        cart.push({...p,qty:1});
+        localStorage.setItem("cart",JSON.stringify(cart));
+        loadCart();
+        alert(p.name+" added to cart!");
+    };
+    suggestedList.appendChild(div);
+});
+
+loadCart();
+</script>
+</body>
+</html>

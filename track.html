@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚚 Live Track Order</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family:Poppins;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:white;
+}
+.header{
+  padding:20px;
+  text-align:center;
+  font-size:24px;
+  background:linear-gradient(90deg,#6366f1,#a855f7);
+}
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(10px);
+  border-radius:20px;
+  padding:20px;
+}
+.status{
+  padding:6px 14px;
+  border-radius:20px;
+  display:inline-block;
+  margin-top:5px;
+}
+.eta{margin-top:10px;color:#facc15;}
+.items{display:none;margin-top:15px;}
+.item{
+  display:flex;
+  gap:10px;
+  background:rgba(255,255,255,0.05);
+  padding:10px;
+  border-radius:10px;
+  margin-top:8px;
+}
+.delivery{
+  margin-top:10px;
+  background:rgba(255,255,255,0.05);
+  padding:10px;
+  border-radius:10px;
+}
+button{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+.call{background:#22c55e;}
+.notify{background:#3b82f6;}
+.cancel{background:#ef4444;}
+.map{
+  height:320px;
+  border-radius:20px;
+  margin-top:20px;
+}
+#toast{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#333;
+  padding:10px 20px;
+  border-radius:10px;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🚚 Live Order Tracking</div>
+
+<div class="container">
+
+<div class="card">
+  <h2 id="orderId"></h2>
+  <div id="status" class="status"></div>
+  <div id="eta" class="eta"></div>
+
+  <button onclick="toggleItems()">📦 View Items</button>
+  <div id="items" class="items"></div>
+
+  <div class="delivery">
+    <strong>Delivery Boy</strong>
+    <p id="boy"></p>
+  </div>
+
+  <button class="call" onclick="callBoy()">📞 Call</button>
+  <button class="notify" onclick="notify()">📲 Notify</button>
+  <button class="cancel" onclick="cancelOrder()">❌ Cancel</button>
+</div>
+
+<div id="map" class="map"></div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// =======================
+// LOAD ORDER
+// =======================
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+const params = new URLSearchParams(window.location.search);
+let orderIdTrack = params.get("id") || localStorage.getItem("trackOrderId");
+
+let order = orders.find(o => o.id == orderIdTrack);
+
+if(!order){
+  alert("Order not found!");
+  window.location.href = "order.html";
+}
+
+// FIX: convert "Ordered" → "Placed"
+function normalizeStatus(status){
+  if(status==="Ordered") return "Placed";
+  return status;
+}
+
+// default delivery boy
+if(!order.boy){
+  order.boy = {name:"Rahul",phone:"9876543210"};
+}
+
+// UI
+const orderIdEl = document.getElementById("orderId");
+const statusEl = document.getElementById("status");
+const itemsEl = document.getElementById("items");
+const etaEl = document.getElementById("eta");
+const boyEl = document.getElementById("boy");
+
+// TOAST
+function toast(msg){
+  let t=document.getElementById("toast");
+  t.innerText=msg;
+  t.style.display="block";
+  setTimeout(()=>t.style.display="none",2000);
+}
+
+// RENDER
+function render(){
+  let current = normalizeStatus(order.status);
+
+  orderIdEl.innerText="Order #"+order.id;
+  statusEl.innerText=current;
+  boyEl.innerText=order.boy.name+" ("+order.boy.phone+")";
+
+  statusEl.style.background =
+    current==="Delivered"?"green":
+    current==="OutforDelivery"?"orange":
+    current==="Cancelled"?"red":"#6366f1";
+
+  itemsEl.innerHTML="";
+  order.items.forEach(i=>{
+    itemsEl.innerHTML+=`
+    <div class="item">
+      <img src="${i.img}" width="50">
+      <div>${i.name} x${i.qty}</div>
+    </div>`;
+  });
+}
+
+// ACTIONS
+function toggleItems(){
+  itemsEl.style.display =
+    itemsEl.style.display==="block"?"none":"block";
+}
+function callBoy(){
+  window.open("tel:"+order.boy.phone);
+}
+function notify(){
+  toast("🔔 Notifications ON");
+}
+function cancelOrder(){
+  if(confirm("Cancel order?")){
+    order.status="Cancelled";
+    localStorage.setItem("orders",JSON.stringify(orders));
+    render();
+  }
+}
+
+// =======================
+// MAP + TRUCK
+// =======================
+function initMap(){
+
+  let user = {lat:28.6139,lng:77.2090}; // fallback
+
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      user = {
+        lat:pos.coords.latitude,
+        lng:pos.coords.longitude
+      };
+      startMap(user);
+    }, ()=>{
+      startMap(user);
+    });
+  } else {
+    startMap(user);
+  }
+}
+
+function startMap(user){
+
+  let start = {lat:user.lat-0.05,lng:user.lng-0.05};
+
+  let map = new google.maps.Map(document.getElementById("map"),{
+    zoom:13,
+    center:user
+  });
+
+  new google.maps.Marker({position:user,map:map});
+
+  let truck = new google.maps.Marker({
+    position:start,
+    map:map,
+    icon:"https://maps.google.com/mapfiles/ms/icons/truck.png"
+  });
+
+  // Resume from correct step
+  let stepMap = {
+    "Placed":0,
+    "Packed":10,
+    "Shipped":20,
+    "OutforDelivery":30,
+    "Delivered":40
+  };
+
+  let step = stepMap[normalizeStatus(order.status)] || 0;
+
+  let move=setInterval(()=>{
+    step++;
+
+    let lat = start.lat+(user.lat-start.lat)*(step/40);
+    let lng = start.lng+(user.lng-start.lng)*(step/40);
+
+    truck.setPosition({lat,lng});
+
+    if(step==10) order.status="Packed";
+    if(step==20) order.status="Shipped";
+    if(step==30) order.status="OutforDelivery";
+    if(step==40){
+      order.status="Delivered";
+      clearInterval(move);
+      toast("🎉 Delivered!");
+    }
+
+    let dist = Math.sqrt(
+      Math.pow(user.lat-lat,2)+Math.pow(user.lng-lng,2)
+    );
+
+    etaEl.innerText="ETA: "+Math.ceil(dist*1000)+" mins";
+
+    render();
+
+  },1000);
+}
+
+// SYNC
+window.addEventListener("storage", ()=>{
+  orders = JSON.parse(localStorage.getItem("orders")) || [];
+  order = orders.find(o=>o.id==orderIdTrack);
+  if(order) render();
+});
+
+// INIT
+render();
+</script>
+
+<!-- ✅ CORRECT GOOGLE MAP SCRIPT -->
+<script async defer 
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOYXBVHOn9t8Cznbv-4bGfCXfHjhIAR6g&callback=initMap">
+</script>
+
+</body>
+</html>
