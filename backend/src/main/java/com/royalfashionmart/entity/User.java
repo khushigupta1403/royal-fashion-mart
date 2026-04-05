@@ -3,6 +3,7 @@ package com.royalfashionmart.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "users")   // ✅ ADD THIS LINE
 public class User {
 
     @Id
