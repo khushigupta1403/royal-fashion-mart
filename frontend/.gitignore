@@ -1,0 +1,6 @@
+backend/target/
+*.log
+*.jar
+node_modules/
+.env
+.idea/
