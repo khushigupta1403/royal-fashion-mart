@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login - Royal Fashion Mart</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* Fullscreen gradient background with animated particles */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  position: relative;
+}
+
+/* Floating particles */
+body::before, body::after {
+  content: "";
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  animation: float 12s infinite alternate;
+  z-index: 0;
+}
+
+body::after {
+  width: 500px;
+  height: 500px;
+  animation-delay: 6s;
+}
+
+@keyframes float {
+  0% { transform: translateY(0) translateX(0) rotate(0deg);}
+  100% { transform: translateY(50px) translateX(50px) rotate(45deg);}
+}
+
+/* Container */
+.container {
+  position: relative;
+  width: 360px;
+  padding: 50px 40px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  text-align: center;
+  color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
+}
+
+.container:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+}
+
+/* Header */
+h2 {
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* Inputs */
+input {
+  width: 100%;
+  padding: 14px 16px;
+  margin: 12px 0;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+input::placeholder {
+  color: #ddd;
+}
+
+input:focus {
+  background: rgba(255,255,255,0.3);
+  box-shadow: 0 0 15px rgba(255,255,255,0.5);
+}
+
+/* Neon Gradient Button */
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #ff6ec4, #7873f5);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 20px rgba(255,110,196,0.5), 0 0 40px rgba(120,115,245,0.5);
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(255,110,196,0.7), 0 0 50px rgba(120,115,245,0.7);
+}
+
+/* Message */
+#msg {
+  margin-top: 18px;
+  font-weight: 600;
+  min-height: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Register link */
+.link {
+  margin-top: 25px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.link a {
+  color: #ffd700;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.link a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Login</h2>
+
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+
+  <button onclick="login()">Login</button>
+
+  <div id="msg"></div>
+
+  <div class="link">
+    Don't have account? <a href="register.html">Register</a>
+  </div>
+</div>
+
+<script>
+async function login() {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+
+  if (!email || !password) {
+    msg.style.color = "red";
+    msg.innerText = "Please fill all fields ❌";
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:8080/auth/login", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { message: text };
+    }
+
+    if (res.ok) {
+      msg.style.color = "lightgreen";
+      msg.innerText = data.message || "Login successful ✅";
+
+      localStorage.setItem("user", data.name || email);
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 1200);
+
+    } else {
+      msg.style.color = "red";
+      msg.innerText = data.message || "Invalid login ❌";
+    }
+
+  } catch (err) {
+    msg.style.color = "red";
+    msg.innerText = "Server not responding ❌";
+  }
+}
+</script>
+
+</body>
+</html>

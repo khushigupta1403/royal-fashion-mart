@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Wedding Chatbot 🤖 - Royal Fashion Mart</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  min-height: 100vh;
+}
+.container {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+#chatbox {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  padding: 10px;
+  margin-bottom: 15px;
+  background: #f8fafc;
+}
+.message {
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+.message.user { align-items: flex-end; }
+.message.bot { align-items: flex-start; }
+.message p {
+  max-width: 80%;
+  padding: 10px 12px;
+  border-radius: 15px;
+  line-height: 1.4;
+}
+.message.user p { background: #2563eb; color: white; border-bottom-right-radius: 0; }
+.message.bot p { background: #e2e8f0; color: #1e293b; border-bottom-left-radius: 0; }
+#userInput {
+  width: calc(100% - 70px);
+  padding: 10px;
+  border-radius: 15px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+}
+button {
+  width: 60px;
+  padding: 10px;
+  margin-left: 10px;
+  border: none;
+  border-radius: 15px;
+  background: #22c55e;
+  color: white;
+  cursor: pointer;
+}
+button:hover { opacity: 0.9; }
+/* Optional: scroll smooth */
+#chatbox::-webkit-scrollbar { width: 6px; }
+#chatbox::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+#chatbox::-webkit-scrollbar-track { background: #f1f5f9; }
+img.suit-img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>AI Wedding Chatbot 🤖</h2>
+  <div id="chatbox"></div>
+  <div style="display:flex;">
+    <input type="text" id="userInput" placeholder="Ask about wedding suits, sharara, colors..." />
+    <button onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script>
+const OPENROUTER_API_KEY = "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"; // 👈 Replace with your key
+const chatbox = document.getElementById("chatbox");
+let messages = [];
+
+// Append messages to chat
+function appendMessage(text, sender) {
+  const div = document.createElement("div");
+  div.classList.add("message", sender);
+  const p = document.createElement("p");
+  p.innerHTML = text;
+  div.appendChild(p);
+  chatbox.appendChild(div);
+  chatbox.scrollTop = chatbox.scrollHeight;
+}
+
+// Initial welcome message
+document.addEventListener("DOMContentLoaded", () => {
+  appendMessage(
+`Hello! 👋 I'm your AI assistant for **wedding suits & fashion tips**. 💍<br>
+Ask me things like:<br>
+- "Suggest sharara designs"<br>
+- "Best colors for bridesmaids"<br>
+- "Modern wedding suits for men"<br>
+- "Wedding suit fabric choices"<br>
+Ask anything!`,
+    "bot"
+  );
+});
+
+// Send message
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const text = input.value.trim();
+  if (!text) return;
+  appendMessage(text, "user");
+  messages.push({ role: "user", content: text });
+  input.value = "";
+
+  appendMessage("Typing...", "bot");
+
+  try {
+    let botReply;
+
+    // Special pre-defined wedding sharara response
+    if (/sharara/i.test(text)) {
+      botReply = `
+<strong>✨ Sharara Suit Wedding Ideas ✨</strong><br>
+- <strong>Colors:</strong> Pastels (blush, mint, ivory) + gold/silver embroidery.<br>
+- <strong>Fabric:</strong> Chiffon, georgette, silk for flow and comfort.<br>
+- <strong>Styling:</strong> Matching dupatta, light jewelry, stylish heels.<br>
+- <strong>Occasion:</strong> Mehndi, Sangeet, Reception.<br>
+<img class="suit-img" src="https://i.pinimg.com/originals/8d/9e/90/8d9e9040b7c5d174f6f0c9f3edbf7483.jpg"><br>
+Ask me for more designs, accessories, or color combos! 💖
+      `;
+    } else {
+      // OpenRouter API dynamic response
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "openrouter/free",
+          messages: messages
+        })
+      });
+      const data = await res.json();
+      botReply = data.choices?.[0]?.message?.content || "No response";
+    }
+
+    messages.push({ role: "assistant", content: botReply });
+
+    // Replace last "Typing..." message
+    const lastBot = chatbox.querySelectorAll(".message.bot p");
+    lastBot[lastBot.length - 1].innerHTML = botReply;
+
+  } catch (err) {
+    console.error(err);
+    appendMessage("⚠️ Error connecting to AI", "bot");
+  }
+}
+</script>
+
+</body>
+</html>
